@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h1>Projekt Kill Darius</h1>
+{% if token %}
+  <a href="">go to {{ token }}</a>
+{% else %}
+  <p>Vytvor si vlastného Dariusa, ktorého premôžeš. Je potrebné vygenerovať klúč, pomocou, ktorého sa dostaneš
+  k svojmu Dariusovi. <a href="/generate/">Generovať kľúč</a></p>
+
+  <p>Ak už máš vygenerovaný kľúč, vlož ho do textového pola a pokračuj ďalej
+  <form method="post" action="/login/">
+    <input type="text" name="key" value="{{ key }}" />
+    <button type="submit">Pokračovať</button>
+  </form>
+  </p>
+{% endif %}
+
+{% endblock %}
