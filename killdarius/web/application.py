@@ -4,15 +4,15 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 
 from killdarius.model.entity import *
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 # set the secret key.  keep this really secret:
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+application.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 connect_db()
 
 
-@app.route("/")
+@application.route("/")
 def index(key=""):
     if 'key' in session:
         key = session['key']
@@ -20,14 +20,14 @@ def index(key=""):
     return render_template('index.html', key=key)
 
 
-@app.route('/generate/')
+@application.route('/generate/')
 @db_session
 def generate():
     session['key'] = uuid.uuid4().hex[:8]
     return redirect("/tasks/"+session['key'])
 
 
-@app.route('/login/', methods=['POST'])
+@application.route('/login/', methods=['POST'])
 @db_session
 def login():
     if validate_login_key(request.form['key']):
@@ -47,7 +47,7 @@ def validate_login_key(key):
         return False
 
 
-@app.route('/tasks/<key>')
+@application.route('/tasks/<key>')
 @db_session
 def show_tasks(key=None):
     if key == "":
@@ -58,7 +58,7 @@ def show_tasks(key=None):
     return render_template('tasks.html', groups=groups, key=key)
 
 
-@app.route('/tasks/create/', methods=['POST'])
+@application.route('/tasks/create/', methods=['POST'])
 @db_session
 def create_task():
     if request.form['taskname'] != "":
@@ -74,7 +74,7 @@ def create_task():
     return redirect('/tasks/'+request.form['key'])
 
 
-@app.route('/group/create/', methods=['POST'])
+@application.route('/group/create/', methods=['POST'])
 @db_session
 def create_group():
     if request.form['groupname'] != "":
@@ -82,7 +82,7 @@ def create_group():
     return redirect('/tasks/'+request.form['key'])
 
 
-@app.route('/tasks/pass/<int:id>', methods=['GET'])
+@application.route('/tasks/pass/<int:id>', methods=['GET'])
 @db_session
 def pass_chosen_task(id=None):
     task = find_one_task(id)
@@ -90,7 +90,7 @@ def pass_chosen_task(id=None):
     return redirect('/tasks/'+session['key'])
 
 
-@app.route('/tasks/fail/<int:id>')
+@application.route('/tasks/fail/<int:id>')
 @db_session
 def fail_chosen_task(id=None):
     task = find_one_task(id)
@@ -98,18 +98,18 @@ def fail_chosen_task(id=None):
     return redirect('/tasks/'+session['key'])
 
 
-@app.route('/tasks/remove/<int:id>')
+@application.route('/tasks/remove/<int:id>')
 @db_session
 def remove_chosen_task(id=None):
     delete_task(id)
     return redirect('/tasks/'+session['key'])
 
 
-@app.route('/tasks/drop-group/<int:id>')
+@application.route('/tasks/drop-group/<int:id>')
 @db_session
 def remove_chosen_group(id=None):
     delete_group(id)
     return redirect('/tasks/'+session['key'])
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=33507)
+    application.run(host='0.0.0.0', port=33507)
