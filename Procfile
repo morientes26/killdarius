@@ -1,1 +1,1 @@
-web: waitress-serve --port=80 killdarius.web:application
+web: waitress-serve --port=$PORT killdarius.web:application
