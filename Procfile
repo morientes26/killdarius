@@ -1,1 +1,1 @@
-web: python killdarius/web/application.py
+heroku ps:scale worker=1
