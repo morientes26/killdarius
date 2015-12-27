@@ -5,7 +5,6 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from killdarius.model.entity import *
 
 app = Flask(__name__)
-#app.run(debug=True, port=33507)
 
 # set the secret key.  keep this really secret:
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -113,4 +112,4 @@ def remove_chosen_group(id=None):
     return redirect('/tasks/'+session['key'])
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
