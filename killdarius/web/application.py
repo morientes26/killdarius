@@ -112,4 +112,4 @@ def remove_chosen_group(id=None):
     return redirect('/tasks/'+session['key'])
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=33507)
