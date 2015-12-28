@@ -1,74 +1,74 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h1>Darius [ {{ key }} ]</h1>
+    <h1>Darius [ {{ key }} ]</h1>
 
-<div class="create-div">
-    <form method="post" action="/group/create/">
-        <label for="groupname">nová skupina :</label>
-        <input type="text" size="50" name="groupname" id="groupname" />
-        <input type="hidden" name="key" value="{{ key }}"/>
-        <button type="submit">vytvoriť</button>
-    </form>
-</div>
-<div class="create-div">
-    <form method="post" action="/tasks/create/">
-        <label for="taskname">nová úloha :</label>
-        <input type="text" size="50" name="taskname" id="taskname" />
-        <input type="hidden" name="key" value="{{ key }}"/>
-        <label for="group_id">priradiť do skupiny : </label>
-        <select name="group" id="group_id">
-            {% if not groups %}
-                <option value="">bez mena</option>
-            {% endif %}
-            {% for group in groups %}
-                <option value="{{ group.id }}">{{ group.name }}</option>
-            {% endfor %}
-        </select>
-        <label for="count">trvanie úlohy :</label>
-        <input type="number" name="count" id="count" min="0" max="30" step="1" value="7"> dní
-        <label for="reset">resetovanie</label>
-        <input type="checkbox" name="reset" id="reset" checked="true" />
-        <button type="submit">vytvoriť</button>
-    </form>
-</div>
-{% for group in groups %}
-    <fieldset>
-        <legend> {{ group.name }}
-        {% if not group.tasks %}
-            <a href="/tasks/drop-group/{{ group.id }}" title="vymazanie skupiny" class="fieldset-link"><i class="material-icons">delete</i></a>
-        {% endif %}
-        </legend>
-        <table class="task-table">
-        {% for task in group.tasks %}
-          <tr>
-              <td class="task-name{% if task.count <= task.progress.__len__() %}-line-through{% endif %}">
-                  {% if task.reset %} * {% endif %}
-                  {{task.name}} - trvanie: {{ task.count }}
-              </td>
-              <td class="task-progress">
-              {% for p in task.progress|sort(attribute='id') %}
-                {% if p.done %}
-                  <span class="pass-span">&nbsp;</span>
-                {% else %}
-                  <span class="fail-span">&nbsp;</span>
+    <div class="create-div">
+        <form method="post" action="/group/create/">
+            <label for="groupname">nová skupina :</label>
+            <input type="text" size="50" name="groupname" id="groupname" />
+            <input type="hidden" name="key" value="{{ key }}"/>
+            <button type="submit">vytvoriť</button>
+        </form>
+    </div>
+    <div class="create-div">
+        <form method="post" action="/tasks/create/">
+            <label for="taskname">nová úloha :</label>
+            <input type="text" size="50" name="taskname" id="taskname" />
+            <input type="hidden" name="key" value="{{ key }}"/>
+            <label for="group_id">priradiť do skupiny : </label>
+            <select name="group" id="group_id">
+                {% if not groups %}
+                    <option value="">bez mena</option>
                 {% endif %}
-              {% endfor %}
-              </td>
-              <td class="task-control">
-                  {% if task.count > task.progress.__len__() %}
-                    <a class="pass-button" href="/tasks/pass/{{ task.id }}" title="splnenie úlohy"><i class="material-icons">done</i></a>
-                    <a class="fail-button" href="/tasks/fail/{{ task.id }}" title="nesplnenie úlohy"><i class="material-icons">close</i></a>
-                  {% endif %}
-                  <a class="remove-button" href="/tasks/remove/{{ task.id }}" title="vymazanie úlohy"><i class="material-icons">delete</i></a>
-              </td>
-          </tr>
-        {% endfor %}
-        </table>
-    </fieldset>
+                {% for group in groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="count">trvanie úlohy :</label>
+            <input type="number" name="count" id="count" min="0" max="30" step="1" value="7"> dní
+            <label for="reset">resetovanie</label>
+            <input type="checkbox" name="reset" id="reset" checked="true" />
+            <button type="submit">vytvoriť</button>
+        </form>
+    </div>
+    {% for group in groups %}
+        <fieldset>
+            <legend> {{ group.name }}
+            {% if not group.tasks %}
+                <a href="/tasks/drop-group/{{ group.id }}" title="vymazanie skupiny" class="fieldset-link"><i class="material-icons">delete</i></a>
+            {% endif %}
+            </legend>
+            <table class="task-table">
+            {% for task in group.tasks %}
+              <tr>
+                  <td class="task-name{% if task.count <= task.progress.__len__() %}-line-through{% endif %}">
+                      {% if task.reset %} * {% endif %}
+                      {{task.name}} - trvanie: {{ task.count }}
+                  </td>
+                  <td class="task-progress">
+                  {% for p in task.progress|sort(attribute='id') %}
+                    {% if p.done %}
+                      <span class="pass-span">&nbsp;</span>
+                    {% else %}
+                      <span class="fail-span">&nbsp;</span>
+                    {% endif %}
+                  {% endfor %}
+                  </td>
+                  <td class="task-control">
+                      {% if task.count > task.progress.__len__() %}
+                        <a class="pass-button" href="/tasks/pass/{{ task.id }}" title="splnenie úlohy"><i class="material-icons">done</i></a>
+                        <a class="fail-button" href="/tasks/fail/{{ task.id }}" title="nesplnenie úlohy"><i class="material-icons">close</i></a>
+                      {% endif %}
+                      <a class="remove-button" href="/tasks/remove/{{ task.id }}" title="vymazanie úlohy"><i class="material-icons">delete</i></a>
+                  </td>
+              </tr>
+            {% endfor %}
+            </table>
+        </fieldset>
 
-{% endfor %}
+    {% endfor %}
 
-<small>* - ak nasledujú za sebou 2 nesplnené úlohy, stav úlohy sa resetuje</small>
+    <small>* - ak nasledujú za sebou 2 nesplnené úlohy, stav úlohy sa resetuje</small>
 
 {% endblock %}

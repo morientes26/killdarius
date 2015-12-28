@@ -1,0 +1,111 @@
+<!-- modal na vytvorenie noveho tasku -->
+<div class="modal fade" id="createTask" tabindex="-1" aria-labelledby="createTasklLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/timeline/task/create/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Vytvorenie úlohy do skupiny úloh</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            Vytvorenej úlohe je možné prideľovať progress, ktorý sa zobrazuje
+            v podobe <i class="fa fa-check"></i> úspešné čiastkove splnenie úlohy,
+            alebo neúspešné plnenie <i class="fa fa-times"></i>
+
+        </p>
+        <div>
+             <div class="form-group">
+                <label for="name" class="control-label">Názov :</label>
+                <input type="text" size="50" name="taskname" id="taskname" class="form-control"/>
+             </div>
+             <div class="form-group">
+                <label for="count" class="control-label">Trvanie úlohy v dňoch :</label>
+                 <i class="fa fa-question-circle"></i>
+                <input type="number" name="count" id="count" min="0" max="30" step="1" value="7" class="form-control"/>
+             </div>
+             <div class="form-group">
+                 <i class="fa fa-bomb"></i> Resetovanie úlohy ak sa 2x nepodarí splniť čiastková úloha
+                <input type="checkbox" name="reset" id="reset" checked="true" />
+             </div>
+            <input type="hidden" name="key" value="{{ key }}"/>
+            <input type="hidden" name="group_id" />
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Uložiť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- modal na vytvorenie novej skupiny -->
+<div class="modal fade" id="createGroup" tabindex="-1" aria-labelledby="createGrouplLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/timeline/group/create/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Vytvorenie skupiny</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            TODO: tu bude nejaky strucny popis co je to za akciu ..
+
+        </p>
+        <div class="form-group">
+            <label for="name" class="control-label">Názov :</label>
+            <input type="text" size="50" name="name" id="name" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="description" class="control-label">Popis :</label>
+            <textarea name="description" id="description" class="form-control"></textarea>
+        </div>
+        <input type="hidden" name="key" value="{{ key }}"/>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Vytvoriť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- modal na premenovanie skupiny -->
+<div class="modal fade" id="renameGroup" tabindex="-1" aria-labelledby="renameGrouplLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/timeline/group/rename/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Editácia skupiny</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            TODO: tu bude nejaky strucny popis co je to za akciu ..
+
+        </p>
+        <div class="form-group">
+            <label for="name" class="control-label">Názov :</label>
+            <input type="text" size="50" name="name" id="name" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="description" class="control-label">Popis :</label>
+            <textarea name="description" id="description" class="form-control"></textarea>
+        </div>
+        <input type="hidden" name="key" value="{{ key }}"/>
+        <input type="hidden" id="group_id" name="group_id" />
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Premenovať</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

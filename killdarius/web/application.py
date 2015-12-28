@@ -24,7 +24,7 @@ def index(key=""):
 @db_session
 def generate():
     session['key'] = uuid.uuid4().hex[:8]
-    return redirect("/tasks/"+session['key'])
+    return redirect("/timeline/"+session['key'])
 
 
 @application.route('/login/', methods=['POST'])
@@ -36,7 +36,7 @@ def login():
         flash('Kľúč neexistuje', 'error')
         return redirect("/")
 
-    return redirect("/tasks/"+request.form['key'])
+    return redirect("/timeline/"+request.form['key'])
 
 
 def validate_login_key(key):
@@ -47,7 +47,7 @@ def validate_login_key(key):
         return False
 
 
-@application.route('/tasks/<key>')
+@application.route('/timeline/<key>')
 @db_session
 def show_tasks(key=None):
     if key == "":
@@ -55,10 +55,10 @@ def show_tasks(key=None):
 
     groups = find_all_groups(key)
 
-    return render_template('tasks.html', groups=groups, key=key)
+    return render_template('timeline.html', groups=groups, key=key)
 
 
-@application.route('/tasks/create/', methods=['POST'])
+@application.route('/timeline/task/create/', methods=['POST'])
 @db_session
 def create_task():
     if request.form['taskname'] != "":
@@ -70,46 +70,54 @@ def create_task():
                         request.form['key'],
                         request.form['count'],
                         reset,
-                        request.form['group'])
-    return redirect('/tasks/'+request.form['key'])
+                        request.form['group_id'])
+    return redirect('/timeline/'+request.form['key'])
 
 
-@application.route('/group/create/', methods=['POST'])
+@application.route('/timeline/group/create/', methods=['POST'])
 @db_session
 def create_group():
-    if request.form['groupname'] != "":
-        create_new_group(request.form['groupname'], request.form['key'])
-    return redirect('/tasks/'+request.form['key'])
+    if request.form['name'] != "":
+        create_new_group(request.form['name'], request.form['description'], request.form['key'])
+    return redirect('/timeline/'+request.form['key'])
 
 
-@application.route('/tasks/pass/<int:id>', methods=['GET'])
+@application.route('/timeline/group/rename/', methods=['POST'])
+@db_session
+def rename_selected_group():
+    if request.form['name'] != "":
+        rename_group(request.form['name'], request.form['description'], request.form['group_id'])
+    return redirect('/timeline/'+request.form['key'])
+
+
+@application.route('/timeline/task/pass/<int:id>', methods=['GET'])
 @db_session
 def pass_chosen_task(id=None):
     task = find_one_task(id)
     done_task(task)
-    return redirect('/tasks/'+session['key'])
+    return redirect('/timeline/'+session['key'])
 
 
-@application.route('/tasks/fail/<int:id>')
+@application.route('/timeline/task/fail/<int:id>')
 @db_session
 def fail_chosen_task(id=None):
     task = find_one_task(id)
     fail_task(task)
-    return redirect('/tasks/'+session['key'])
+    return redirect('/timeline/'+session['key'])
 
 
-@application.route('/tasks/remove/<int:id>')
+@application.route('/timeline/task/remove/<int:id>')
 @db_session
 def remove_chosen_task(id=None):
     delete_task(id)
-    return redirect('/tasks/'+session['key'])
+    return redirect('/timeline/'+session['key'])
 
 
-@application.route('/tasks/drop-group/<int:id>')
+@application.route('/timeline/group/delete/<int:id>')
 @db_session
 def remove_chosen_group(id=None):
     delete_group(id)
-    return redirect('/tasks/'+session['key'])
+    return redirect('/timeline/'+session['key'])
 
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', port=33507)
+    application.run(debug=True)
