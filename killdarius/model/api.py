@@ -1,5 +1,7 @@
 import logging
 import uuid
+
+from datetime import date, timedelta, datetime
 from pony.orm import db_session, select, desc
 
 from killdarius.ext.send_email import EmailNotification
@@ -23,10 +25,10 @@ def authorize(key, session):
 
 
 @db_session
-def create_new_task(name, key, count, user_id, reset=False, group_id=None, progress=None):
+def create_new_task(name, key, count, user_id, reset=False, once=True, group_id=None, progress=None):
     logging.debug("Create new task")
     user = User[user_id]
-    task = Task(name=name, user=user, count=count, reset=reset)
+    task = Task(name=name, user=user, count=count, reset=reset, once=once)
     if progress:
         pr = []
         for p in progress:
@@ -76,6 +78,13 @@ def add_user_to_db(username, key):
 def set_user_password(user_id, password):
     user = User.get(id=user_id)
     user.password = password
+
+
+@db_session
+def set_user_profile(user_id, nickname, icon_color):
+    user = User.get(id=user_id)
+    user.nickname = nickname
+    user.icon_color = icon_color
 
 
 @db_session
@@ -143,6 +152,23 @@ def has_access_to_task(user, task_id):
 
 
 @db_session
+def can_progress_task(task_id):
+    task = find_one_task(task_id)
+    if not task.once:
+        return True
+    else:
+        pr = Progress.select(lambda p: p.task == task).order_by(lambda p: desc(p.id))[:]
+        if not pr:
+            return True
+
+        test_date = datetime.now()-timedelta(hours=14)
+        if pr[0].created_at > test_date:
+            return False
+
+        return True
+
+
+@db_session
 def done_task(task):
     p = Progress()
     p.done = True
@@ -181,6 +207,7 @@ def find_all_groups(key):
 
 @db_session
 def find_all_user_in_timeline(key):
+    #FIXME: prerobit cez distinc usera
     return select(u for u in User for t in Task if t.group.key==key).order_by(User.id)[:]
 
 

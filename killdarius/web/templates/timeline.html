@@ -17,7 +17,7 @@
                         {% if users.__len__()>1 %}
                             <span> spolocne zdielaju timeline : </span>
                             {% for user in users %}
-                                <span class="btn btn-outline btn-primary btn-xs">{{ user.name }}</span>
+                                <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">{{ user.name }}</span>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -42,19 +42,16 @@
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <h4 class="timeline-title">{{ group.name }}</h4>
-                                {% if group.label %}
-                                    <p><small class="text-muted"><i class="fa fa-tag"></i> {{ group.label }}</small></p>
-                                {% endif %}
                             </div>
                             <div class="timeline-body">
                                {% if group.description %}
                                <p>
-                                    {{ group.description }}
+                                    <small class="text-muted">{{ group.description }}</small>
                                </p>
                                </br>
                                {% endif %}
                                {% for user in users %}
-                                    <span class="btn btn-outline btn-primary btn-xs">{{ user.name }}</span>
+                                    <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">{{ user.name }}</span>
 
                                    <div style="margin-top:10px;">
 
@@ -78,23 +75,33 @@
                                            title="{{ title }}">
 
                                               {% if task.reset %}
-                                                  <span title="Spustené resetovanie progresu úlohy po dvoch neúspechoch !"><i class="fa fa-bomb"></i></span>
+                                                <small title="Spustené resetovanie progresu úlohy po dvoch neúspechoch !" style="text-decoration: underline;">
+                                                  {{task.name}}
+                                                </small>
+                                              {% else %}
+                                                <small>
+                                                  {{task.name}}
+                                                </small>
                                               {% endif %}
 
-                                              {{task.name}}
                                        </div>
                                        <div class="col-md-5">
-                                          {% if not done %}
+                                       {% if not done %}
 
                                           {% for p in task.progress|sort(attribute='id') %}
                                             {% if p.done %}
-                                              <span class="label label-success"><i class="fa fa-check"></i></span>
+                                              <span class="btn btn btn-success btn-xs">&nbsp;</span>
+                                              <!--i class="fa fa-check"></i-->
                                             {% else %}
-                                              <span class="label label-danger"><i class="fa fa-times"></i></span>
+                                              <span class="btn btn btn-danger btn-xs">&nbsp;</span>
+                                              <!--i class="fa fa-times"></i-->
                                             {% endif %}
                                           {% endfor %}
+                                          {% for p in range(task.count - task.progress.__len__()) %}
+                                                <span class="btn btn-outline btn-default btn-xs">&nbsp;</span>
+                                          {% endfor %}
 
-                                           {% endif %}
+                                       {% endif %}
                                        </div>
                                        <div class="col-md-3">
                                           {% if task.count > task.progress.__len__() %}

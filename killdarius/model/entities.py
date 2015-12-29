@@ -10,6 +10,7 @@ class Progress(db.Entity):
     id = PrimaryKey(int, auto=True)
     done = Optional(bool)
     task = Optional(lambda: Task)
+    created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
 
 
 class Task(db.Entity):
@@ -20,7 +21,7 @@ class Task(db.Entity):
     user = Required(lambda: User)
     count = Required(int, default=0)
     reset = Required(bool, default=True)
-    label = Optional(str, 32, nullable=True)
+    once = Optional(bool, default=True)
     group = Optional(lambda: Group)
 
 
@@ -39,6 +40,8 @@ class User(db.Entity):
     task = Set(Task, cascade_delete=True)
     timeline = Set(Timeline)
     own_timeline = Set(Timeline, reverse="owner")
+    nickname = Optional(str, 32)
+    icon_color = Optional(str, 20, default="primary")
 
 
 class Group(db.Entity):
@@ -66,14 +69,14 @@ def create_test_data():
     person = User(name='mori', password='mori')
     timeline = Timeline(name='test timeline', owner=person, user=person, key=key)
     person.timeline = timeline
-    task = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person)
+    task = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person, created_at='2015-01-01 00:00:00')
 
-    Progress(task=task)
+    Progress(task=task, created_at='2015-01-01 00:00:00')
 
     person2 = User(name='lucia', password='lucia')
-    task2 = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person2)
+    task2 = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person2, created_at='2015-01-01 00:00:00')
 
-    Progress(task=task2)
+    Progress(task=task2, created_at='2015-01-01 00:00:00')
 
     Group(name='Skupina 1', tasks=[task, task2], key=key, label="11.10.2015 - 11.01.2016")
     Group(name='Skupina 2', tasks=[task], key=key, description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dolorem quibusdam, tenetur commodi provident cumque magni voluptatem libero, quis rerum. Fugiat esse debitis optio, tempore. Animi officiis alias, officia repellendus.")

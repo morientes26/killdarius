@@ -82,9 +82,9 @@
             })
 
             // open modal for set user password
-            if ({{ promt }}){
+            {% if promt %}
                 $('#passwordSet').modal('show');
-            }
+            {% endif %}
         });
 
     </script>

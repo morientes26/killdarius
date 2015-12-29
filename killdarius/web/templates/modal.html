@@ -25,8 +25,12 @@
                 <input type="number" name="count" id="count" min="0" max="30" step="1" value="7" class="form-control"/>
              </div>
              <div class="form-group">
-                 <i class="fa fa-bomb"></i> Resetovanie úlohy ak sa 2x nepodarí splniť čiastková úloha
-                <input type="checkbox" name="reset" id="reset" checked="true" />
+                 <input type="checkbox" name="reset" id="reset" checked="true" />
+                  Resetovanie úlohy ak sa 2x nepodarí splniť čiastková úloha <i class="fa fa-warning"></i>
+             </div>
+             <div class="form-group">
+                 <input type="checkbox" name="once" id="once" checked="true" />
+                 Plnenie úlohy maximálne 1x za deň
              </div>
             <input type="hidden" name="key" value="{{ key }}"/>
             <input type="hidden" name="group_id" />
@@ -53,7 +57,7 @@
       </div>
       <div class="modal-body">
         <p>
-            TODO: tu bude nejaky strucny popis co je to za akciu ..
+            Úlohy sú vkladané do skupín pre lepšiu prehladnosť. <br/>Skupiny sú zoraďované v časovej postupnosti z dola na hor.<br/>
 
         </p>
         <div class="form-group">
@@ -85,10 +89,7 @@
         <h4 class="modal-title">Editácia skupiny</h4>
       </div>
       <div class="modal-body">
-        <p>
-            TODO: tu bude nejaky strucny popis co je to za akciu ..
 
-        </p>
         <div class="form-group">
             <label for="name" class="control-label">Názov :</label>
             <input type="text" size="50" name="name" id="name" class="form-control" autofocus/>
@@ -121,7 +122,7 @@
       </div>
       <div class="modal-body">
         <p>
-            TODO: tu bude nejaky strucny popis co je to za akciu ..
+            Timeline obsahuje skupiny úloh zoraďované v časovej postupnosti.
 
         </p>
         <div class="form-group">
@@ -150,8 +151,9 @@
       </div>
       <div class="modal-body">
         <p>
-            TODO: tu bude nejaky strucny popis co je to za akciu ..
-
+           Zdielaním umožníte iným ľuďom vytvárať spoločné úlohy a navzájom sa<br/> kontrolovať v ich plnení.
+            Po odoslaní zdielania, príde vybranému človeku notifikačný email<br/> s linkom na zdielaný timeline.
+            Po potvrdení zdielania, si môže každý vytvárať<br/> a spravovať svoje úlohy na timeline.
         </p>
 
         <div class="form-group">
@@ -178,12 +180,11 @@
       <form method="post" action="/user/password/">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Nastavenie hesla</h4>
+        <h4 class="modal-title">Nastavenie prihlasovacieho hesla</h4>
       </div>
       <div class="modal-body">
         <p>
-            Systém Vás registroval, ale je potrebne si nastaviť prihlasovacie heslo.<br/>
-            Na vytvorenie hesla nie sú žiadne obmedzenia.
+            Na nastavenie hesla nie sú žiadne obmedzenia. <br/> Prihlasovacím menom a heslom sa prihlasujete do aplikácie.
         </p>
       <br/>
         <div class="form-group">
@@ -198,6 +199,50 @@
         {% if error %}
             <div class="error">{{ error }}</div>
         {% endif %}
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Nastaviť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- modal na zmenu hesla -->
+<div class="modal fade" id="profileSet" tabindex="-1" aria-labelledby="profileSetLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/user/profile/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Nastavenie používateľského profilu</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            V systéme je možné používať alias (nickname), <br/>
+            ktorý sa bude zobrazovať pri Vašich úlohách.<br/>
+            Tiež je možné vybrať svoju vlastnú farbu zobrazeného aliasu.
+        </p>
+      <br/>
+        <div class="form-group">
+            <label for="alias" class="control-label">Alias (nickname) :</label>
+            <input type="text" name="alias" id="alias" class="form-control" autofocus/>
+        </div>
+        <div class="form-group">
+            <label for="icon_color" class="control-label">Farba :</label>
+            <input type="radio" name="icon_color" id="icon_color" value="default" checked/>
+            <span class="btn btn-outline btn-default btn-xs">darius</span>
+            <input type="radio" name="icon_color" id="icon_color" value="primary" />
+            <span class="btn btn-outline btn-primary btn-xs">darius</span>
+            <input type="radio" name="icon_color" id="icon_color" value="success" />
+            <span class="btn btn-outline btn-success btn-xs">darius</span>
+            <input type="radio" name="icon_color" id="icon_color" value="warning" />
+            <span class="btn btn-outline btn-warning btn-xs">darius</span>
+            <input type="radio" name="icon_color" id="icon_color" value="danger" />
+            <span class="btn btn-outline btn-danger btn-xs">darius</span>
+        </div>
 
       </div>
       <div class="modal-footer">

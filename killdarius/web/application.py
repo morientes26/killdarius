@@ -78,6 +78,14 @@ def set_password():
     return redirect('/timeline/' + session['key'])
 
 
+@application.route('/user/profile/', methods=['POST'])
+def set_profile():
+    set_user_profile(session["user_id"], request.form['alias'], request.form['icon_color'])
+    flash("Profil úspešne nastavený")
+
+    return redirect('/timeline/' + session['key'])
+
+
 @application.route('/timeline/<key>')
 @db_session
 def show_tasks(key=None):
@@ -106,15 +114,19 @@ def show_tasks(key=None):
 @db_session
 def create_task():
     if request.form['taskname'] != "":
+        reset = False
+        once = False
         if 'reset' in request.form:
             reset = True
-        else:
-            reset = False
+        if 'once' in request.form:
+            once = True
+
         create_new_task(request.form['taskname'],
                         request.form['key'],
                         request.form['count'],
                         session['user_id'],
                         reset,
+                        once,
                         request.form['group_id'])
     return redirect('/timeline/' + request.form['key'])
 
@@ -176,6 +188,10 @@ def pass_chosen_task(id=None):
     user = find_user_by_name(session['username'])
     if not has_access_to_task(user, id):
         flash("Nemáte oprávnenie manažovať túto úlohu. Nie ste vlastníkom úlohy", "error")
+        return redirect('/timeline/' + session['key'])
+
+    if not can_progress_task(id):
+        flash("Dnes už bola vykonaná aktivita pre úlohu. Ďalšia aktivita povolená až zajtra", "error")
         return redirect('/timeline/' + session['key'])
 
     task = find_one_task(id)
