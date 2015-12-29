@@ -7,19 +7,20 @@ verzia : 0.1.3
         - prihlasovanie do systemu
         - anonymne prihlasovanie
         - opravnenie na timeline
-        
-
-Úlohy na vylepšenie :
-
         - prepojit osobu z taskom pri vytvarani tasku
         - zdielanie timelinu
-        - aktivovanie noveho konta pri doruceni zdielaneho linku
         - vytvaranie noveho timeline
         - vyber timelinu
-        - zmena profilu, nickname, obrazok, heslo
+        - odoslanie zdielania
+        - aktivovanie noveho konta pri doruceni zdielaneho linku
         - zobrazovanie progresu taskov
-        - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
 
+Úlohy na vylepšenie :
+                
+        - modal na zmenu hesla po prvom prihlaseni
+        - zmena profilu, nickname, obrazok, heslo        
+        - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
+        - notifikacie zdielani
     
         - pamatat si v db len hash hesla        
         - dokoncit unit testy

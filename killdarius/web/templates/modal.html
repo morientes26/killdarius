@@ -143,7 +143,7 @@
 <div class="modal fade" id="shareTimeline" tabindex="-1" aria-labelledby="shareTimelineLabel" tabindex="-1" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="post" action="/timeline/create/">
+      <form method="post" action="/timeline/share/">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Zdielanie timelinu</h4>
@@ -153,9 +153,12 @@
             TODO: tu bude nejaky strucny popis co je to za akciu ..
 
         </p>
+
         <div class="form-group">
-            <label for="name" class="control-label">Email :</label>
-            <input type="text" size="50" name="name" id="name" class="form-control" autofocus/>
+            <label for="emails" class="control-label">Vložte kontakty :</label>
+            <select id="emails" name="emails" size="50" tabindex="-1" class="select-tags form-control" multiple="" style="width: 100%;">
+              <!--option value="1">Mori</option-->
+            </select>
         </div>
 
       </div>

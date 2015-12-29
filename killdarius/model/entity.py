@@ -3,6 +3,8 @@ import uuid
 from datetime import datetime
 from pony.orm import Database, Required, Set, PrimaryKey, db_session, Optional, select, desc
 
+from killdarius.ext.send_email import EmailNotification
+
 db = Database()
 
 
@@ -117,11 +119,77 @@ def create_new_timeline(key, user_id, name):
 
 
 @db_session
+def add_user_to_db(username, key):
+    user = find_user_by_name(username)
+    if not user:
+        user = User(name=username, password="..empty..")
+        timeline = Timeline.get(key=key)
+        add_user_to_timeline(user, timeline)
+    return user
+
+
+@db_session
+def share_timeline_to_email(from_user, emails, key):
+    timeline = Timeline.get(key=key)
+    e_notify = EmailNotification()
+
+    for email in emails:
+        user = User.get(name=email)
+        if user:
+            add_user_to_timeline(user, timeline)
+        text = prepare_text(from_user, email, key)
+        e_notify.send(email, text[0], text[1])
+
+
+def add_user_to_timeline(user, timeline):
+    users = [user]
+    for u in timeline.user:
+        users.append(u)
+    timeline.user = users
+
+
+def prepare_text(from_user, email, key):
+    token = "?key="+key+"&user="+email
+    share_url = "http://localhost:5000/timeline/share/"+token
+    text = "Ahoj!\nBola ti poslaná notifikácia o zdielani timelinu v projekte KillDarius od používateľa <b>"+from_user.name+"</br>\nNotifikáciu si mǒžeš pozrieť kliknutím na link\n"+share_url
+    html = "<html><head></head><body><p>Ahoj!<br>Bola ti poslaná notifikácia o zdielaní timelinu v projekte KillDarius od používateľa <b>"+from_user.name+"</b><br>Notifikáciu si mǒžeš pozrieť kliknutím na link <a href="+share_url+">link</a></p></body></html>"
+    return [text, html]
+
+
+@db_session
+def count_progression(groups):
+    progression = {}
+    for group in groups:
+        nn = 0
+        i = 0
+        for task in group.tasks:
+            n = task.progress.__len__()
+            n = (n / task.count) * 100
+            nn += n
+            i += 1
+        if i > 0:
+            progression[group.id] = int(nn / i)
+        else:
+            progression[group.id] = 0
+
+    return progression
+
+
+@db_session
 def rename_group(name, description, id):
     group = Group.get(id=id)
     group.name = name
     group.description = description
     return group
+
+
+@db_session
+def has_access_to_task(user, task_id):
+    task = find_one_task(task_id)
+    if task in user.task:
+        return True
+    else:
+        return False
 
 
 @db_session

@@ -1,14 +1,13 @@
 {
-  "name": "startbootstrap-sb-admin-2",
-  "version": "1.0.7",
-  "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2/",
+  "name": "killdarius",
+  "version": "1.0.0",
+  "homepage": "",
   "authors": [
-    "David Miller"
+    "Michal Kalman"
   ],
   "description": "A free, open source, Bootstrap admin theme created by Start Bootstrap",
   "keywords": [
-    "bootstrap",
-    "theme"
+    "killdarius"
   ],
   "license": "Apache",
   "ignore": [
@@ -36,6 +35,7 @@
     "morrisjs": "~0.5.1",
     "datatables-responsive": "~1.0.3",
     "bootstrap-social": "~4.8.0",
-    "flot.tooltip": "~0.8.4"
+    "flot.tooltip": "~0.8.4",
+    "select2": "~4.0.1"
   }
 }

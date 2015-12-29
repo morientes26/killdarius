@@ -10,7 +10,6 @@ application.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 application.config['TEST_USER'] = "anonym-224"
 application.config['ADMIN_USER'] = "morientes"
 
-
 connect_db()
 
 
@@ -23,7 +22,7 @@ def index():
 @db_session
 def generate():
     session['key'] = generate_key()
-    return redirect("/timeline/"+session['key'])
+    return redirect("/timeline/" + session['key'])
 
 
 @application.route('/login/', methods=['GET', 'POST'])
@@ -64,6 +63,8 @@ def show_tasks(key=None):
     if key == "":
         redirect(url_for('index'))
 
+    session['key'] = key
+
     if not authorize(key, session):
         flash("Nemate opravnenie vidiet obsah stranky")
         return redirect(url_for('index'))
@@ -71,8 +72,9 @@ def show_tasks(key=None):
     groups = find_all_groups(key)
     users = find_all_user_in_timeline(key)
     timelines = find_all_user_timeline(session['user_id'])
+    progression = count_progression(groups)
 
-    return render_template('timeline.html', groups=groups, key=key, users=users, timelines=timelines)
+    return render_template('timeline.html', groups=groups, key=key, users=users, timelines=timelines, progression=progression)
 
 
 @application.route('/timeline/task/create/', methods=['POST'])
@@ -89,7 +91,7 @@ def create_task():
                         session['user_id'],
                         reset,
                         request.form['group_id'])
-    return redirect('/timeline/'+request.form['key'])
+    return redirect('/timeline/' + request.form['key'])
 
 
 @application.route('/timeline/create/', methods=['POST'])
@@ -97,7 +99,25 @@ def create_task():
 def create_timeline():
     session['key'] = generate_key()
     create_new_timeline(session['key'], session['user_id'], request.form['name'])
-    return redirect("/timeline/"+session['key'])
+    return redirect("/timeline/" + session['key'])
+
+
+@application.route('/timeline/share/', methods=['POST','GET'])
+@db_session
+def share_timeline():
+    if request.method == 'POST':
+        key = session['key']
+        from_user = find_user_by_name(session['username'])
+        emails = request.values.getlist('emails')
+        share_timeline_to_email(from_user, emails, key)
+        flash("Kontaktom bola odoslaná požiadavka na zdielanie timelinu")
+        return redirect("/timeline/" + key)
+    else:
+        username = request.args.get('user')
+        key = request.args.get('key')
+        user = add_user_to_db(username, key)
+        flash("Vitaj, "+user.name+" v zdielanom timeline")
+        return redirect("/timeline/" + key)
 
 
 @application.route('/timeline/group/create/', methods=['POST'])
@@ -105,7 +125,7 @@ def create_timeline():
 def create_group():
     if request.form['name'] != "":
         create_new_group(request.form['name'], request.form['description'], request.form['key'])
-    return redirect('/timeline/'+request.form['key'])
+    return redirect('/timeline/' + request.form['key'])
 
 
 @application.route('/timeline/group/rename/', methods=['POST'])
@@ -113,37 +133,51 @@ def create_group():
 def rename_selected_group():
     if request.form['name'] != "":
         rename_group(request.form['name'], request.form['description'], request.form['group_id'])
-    return redirect('/timeline/'+request.form['key'])
+    return redirect('/timeline/' + request.form['key'])
 
 
 @application.route('/timeline/task/pass/<int:id>', methods=['GET'])
 @db_session
 def pass_chosen_task(id=None):
+    user = find_user_by_name(session['username'])
+    if not has_access_to_task(user, id):
+        flash("Nemáte oprávnenie manažovať túto úlohu. Nie ste vlastníkom úlohy", "error")
+        return redirect('/timeline/' + session['key'])
+
     task = find_one_task(id)
     done_task(task)
-    return redirect('/timeline/'+session['key'])
+    return redirect('/timeline/' + session['key'])
 
 
 @application.route('/timeline/task/fail/<int:id>')
 @db_session
 def fail_chosen_task(id=None):
+    user = find_user_by_name(session['username'])
+    if not has_access_to_task(user, id):
+        flash("Nemáte oprávnenie manažovať túto úlohu. Nie ste vlastníkom úlohy", "error")
+        return redirect('/timeline/' + session['key'])
     task = find_one_task(id)
     fail_task(task)
-    return redirect('/timeline/'+session['key'])
+    return redirect('/timeline/' + session['key'])
 
 
 @application.route('/timeline/task/remove/<int:id>')
 @db_session
 def remove_chosen_task(id=None):
+    user = find_user_by_name(session['username'])
+    if not has_access_to_task(user, id):
+        flash("Nemáte oprávnenie manažovať túto úlohu. Nie ste vlastníkom úlohy", "error")
+        return redirect('/timeline/' + session['key'])
     delete_task(id)
-    return redirect('/timeline/'+session['key'])
+    return redirect('/timeline/' + session['key'])
 
 
 @application.route('/timeline/group/delete/<int:id>')
 @db_session
 def remove_chosen_group(id=None):
     delete_group(id)
-    return redirect('/timeline/'+session['key'])
+    return redirect('/timeline/' + session['key'])
+
 
 if __name__ == "__main__":
     application.run(debug=True)

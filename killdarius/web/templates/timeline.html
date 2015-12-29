@@ -4,7 +4,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-2">
                         <i class="fa fa-clock-o fa-fw"></i>
                         {% for timeline in timelines %}
                             {% if timeline.key==key %}
@@ -12,6 +12,14 @@
                                 {% break %}
                             {% endif %}
                         {% endfor %}
+                    </div>
+                    <div class="col-md-7">
+                        {% if users.__len__()>1 %}
+                            <span> spolocne zdielaju timeline : </span>
+                            {% for user in users %}
+                                <span class="btn btn-outline btn-primary btn-xs">{{ user.name }}</span>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div class="col-md-3">
                         <a href="#" data-toggle="modal" data-target="#createGroup">
@@ -46,8 +54,8 @@
                                </br>
                                {% endif %}
                                {% for user in users %}
+                                    <span class="btn btn-outline btn-primary btn-xs">{{ user.name }}</span>
 
-                                   {{ user.name }}
                                    <div style="margin-top:10px;">
 
                                    {% for task in group.tasks|sort %}
