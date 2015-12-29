@@ -109,3 +109,61 @@
     </div>
   </div>
 </div>
+
+<!-- modal na vytvorenie noveho timelinu -->
+<div class="modal fade" id="createTimeline" tabindex="-1" aria-labelledby="createTimelineLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/timeline/create/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Vytvorenie nového timelinu</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            TODO: tu bude nejaky strucny popis co je to za akciu ..
+
+        </p>
+        <div class="form-group">
+            <label for="name" class="control-label">Názov :</label>
+            <input type="text" size="50" name="name" id="name" class="form-control" autofocus/>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Vytvoriť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- modal na zdielanie timelinu -->
+<div class="modal fade" id="shareTimeline" tabindex="-1" aria-labelledby="shareTimelineLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/timeline/create/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Zdielanie timelinu</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            TODO: tu bude nejaky strucny popis co je to za akciu ..
+
+        </p>
+        <div class="form-group">
+            <label for="name" class="control-label">Email :</label>
+            <input type="text" size="50" name="name" id="name" class="form-control" autofocus/>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Vytvoriť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

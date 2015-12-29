@@ -4,12 +4,21 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-md-10">
-                        <i class="fa fa-clock-o fa-fw"></i> Darius timeline
+                    <div class="col-md-9">
+                        <i class="fa fa-clock-o fa-fw"></i>
+                        {% for timeline in timelines %}
+                            {% if timeline.key==key %}
+                                {{ timeline.name }}
+                                {% break %}
+                            {% endif %}
+                        {% endfor %}
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <a href="#" data-toggle="modal" data-target="#createGroup">
-                            <button type="button" class="btn btn-outline btn-default"><i class="fa  fa-plus"></i> Vytvoriť novú skupinu</button>
+                            <button type="button" class="btn btn-outline btn-default"><i class="fa fa-plus"></i> Vytvoriť novú skupinu</button>
+                        </a>
+                        <a href="#" data-toggle="modal" data-target="#shareTimeline">
+                            <button type="button" class="btn btn-outline btn-default"><i class="fa fa-share-alt"></i> Zdielať timeline</button>
                         </a>
                     </div>
                  </div>

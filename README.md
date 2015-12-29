@@ -6,6 +6,7 @@ verzia : 0.1.3
 
         - prihlasovanie do systemu
         - anonymne prihlasovanie
+        - opravnenie na timeline
         
 
 Úlohy na vylepšenie :

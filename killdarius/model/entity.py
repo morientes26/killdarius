@@ -12,7 +12,7 @@ db = Database()
 class Progress(db.Entity):
     id = PrimaryKey(int, auto=True)
     done = Optional(bool)
-    task = Optional("Task")
+    task = Optional(lambda: Task)
 
 
 class Task(db.Entity):
@@ -20,11 +20,18 @@ class Task(db.Entity):
     name = Required(str, 126)
     created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     progress = Set(Progress, cascade_delete=True)
-    user = Required("User")
+    user = Required(lambda: User)
     count = Required(int, default=0)
     reset = Required(bool, default=True)
     label = Optional(str, 32, nullable=True)
-    group = Optional("Group")
+    group = Optional(lambda: Group)
+
+
+class Timeline(db.Entity):
+    key = PrimaryKey(str)
+    name = Required(str, 126, default='timeline')
+    user = Set(lambda: User)
+    owner = Required(lambda: User)
 
 
 class User(db.Entity):
@@ -32,6 +39,8 @@ class User(db.Entity):
     name = Required(str, 32)
     password = Required(str, 32)
     task = Set(Task, cascade_delete=True)
+    timeline = Set(Timeline)
+    own_timeline = Set(Timeline, reverse="owner")
 
 
 class Group(db.Entity):
@@ -57,6 +66,18 @@ def generate_key():
     return uuid.uuid4().hex[:8]
 
 
+def authorize(key, session):
+    if not 'user_id' in session:
+        return False
+
+    timeline = Timeline.get(key=key)
+    user = User.get(id=session['user_id'])
+    if user in timeline.user:
+        return True
+    else:
+        return False
+
+
 @db_session
 def create_new_task(name, key, count, user_id, reset=False, group_id=None, progress=None):
     user = User[user_id]
@@ -74,6 +95,10 @@ def create_new_task(name, key, count, user_id, reset=False, group_id=None, progr
     else:
         group = Group(tasks=[task], key=key)
 
+    timeline = Timeline.get(key=key)
+    if not timeline:
+        Timeline(key=key, owner=user, user=user)
+
     task.group = group
     return task
 
@@ -81,6 +106,14 @@ def create_new_task(name, key, count, user_id, reset=False, group_id=None, progr
 @db_session
 def create_new_group(name, description, key):
     return Group(name=name, description=description, tasks=[], key=key)
+
+
+@db_session
+def create_new_timeline(key, user_id, name):
+    user = User[user_id]
+    # create default group
+    create_new_group("skupina úloh č.1", "Predgenerovaná skupina úloh. V prípade potreby editujte popis a názov skupiny.", key)
+    return Timeline(name=name, key=key, owner=user, user=user)
 
 
 @db_session
@@ -134,6 +167,11 @@ def find_all_user_in_timeline(key):
 
 
 @db_session
+def find_all_user_timeline(user_id):
+    user = User.get(id=user_id)
+    return select(t for t in Timeline if user in t.user)
+
+@db_session
 def delete_task(id):
     task = find_one_task(id)
     if task.progress:
@@ -180,6 +218,8 @@ def get_last_created_key_by_username(name):
 def create_test_data():
     key = '0000'
     person = User(name='mori', password='mori')
+    timeline = Timeline(name='test timeline', owner=person, user=person, key=key)
+    person.timeline = timeline
     task = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person)
 
     prog1 = Progress(task=task)

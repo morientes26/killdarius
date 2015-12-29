@@ -64,10 +64,15 @@ def show_tasks(key=None):
     if key == "":
         redirect(url_for('index'))
 
+    if not authorize(key, session):
+        flash("Nemate opravnenie vidiet obsah stranky")
+        return redirect(url_for('index'))
+
     groups = find_all_groups(key)
     users = find_all_user_in_timeline(key)
+    timelines = find_all_user_timeline(session['user_id'])
 
-    return render_template('timeline.html', groups=groups, key=key, users=users)
+    return render_template('timeline.html', groups=groups, key=key, users=users, timelines=timelines)
 
 
 @application.route('/timeline/task/create/', methods=['POST'])
@@ -85,6 +90,14 @@ def create_task():
                         reset,
                         request.form['group_id'])
     return redirect('/timeline/'+request.form['key'])
+
+
+@application.route('/timeline/create/', methods=['POST'])
+@db_session
+def create_timeline():
+    session['key'] = generate_key()
+    create_new_timeline(session['key'], session['user_id'], request.form['name'])
+    return redirect("/timeline/"+session['key'])
 
 
 @application.route('/timeline/group/create/', methods=['POST'])

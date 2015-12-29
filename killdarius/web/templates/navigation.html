@@ -12,6 +12,7 @@
             </div>
             <!-- /.navbar-header -->
 
+            {% if session.username %}
             <ul class="nav navbar-top-links navbar-right">
 
                 <li class="dropdown">
@@ -19,11 +20,14 @@
                         <i class="fa fa-th-large"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
+                        {% for timeline in timelines %}
                         <li>
-                            <a href="#"><i class="fa fa-list-alt fa-fw"></i> Timeline 01</a>
+                            <a href="/timeline/{{ timeline.key }}"><i class="fa fa-list-alt fa-fw"></i> {{ timeline.name }}</a>
                         </li>
+                        {% endfor %}
+                        <li class="divider"></li>
                         <li>
-                            <a href="/logout/"><i class="fa fa-list-alt fa-fw"></i> Timeline 02</a>
+                            <a href="" data-toggle="modal" data-target="#createTimeline">Vytvoriť nový timeline</a>
                         </li>
                     </ul>
                 </li>
@@ -73,7 +77,7 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>
-                        {% if session.username %} {{ session.username }}{% endif %}
+                        {{ session.username }}
                         <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
@@ -88,6 +92,7 @@
                 </li>
                 <!-- /.dropdown -->
             </ul>
+            {% endif %}
             <!-- /.navbar-static-side -->
         </nav>
 
