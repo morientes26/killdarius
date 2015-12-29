@@ -18,7 +18,7 @@ else:
     application.config.from_pyfile('killdarius.settings')
     print("Application running in production mode")
 
-logging.basicConfig(filename='../data/killdarius.log',
+logging.basicConfig(filename='killdarius.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
