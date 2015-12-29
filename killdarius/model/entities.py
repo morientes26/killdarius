@@ -26,6 +26,7 @@ class Task(db.Entity):
 
 class Timeline(db.Entity):
     key = PrimaryKey(str)
+    created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     name = Required(str, 126, default='timeline')
     user = Set(lambda: User)
     owner = Required(lambda: User)

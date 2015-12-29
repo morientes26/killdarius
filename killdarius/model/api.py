@@ -16,10 +16,10 @@ def authorize(key, session):
 
     timeline = Timeline.get(key=key)
     user = User.get(id=session['user_id'])
-    if user in timeline.user:
-        return True
-    else:
-        return False
+    if timeline:
+        if user in timeline.user:
+            return True
+    return False
 
 
 @db_session
@@ -189,6 +189,7 @@ def find_all_user_timeline(user_id):
     user = User.get(id=user_id)
     return select(t for t in Timeline if user in t.user)
 
+
 @db_session
 def delete_task(id):
     task = find_one_task(id)
@@ -225,10 +226,14 @@ def find_user_by_name(username):
 
 
 def get_last_created_key_by_username(name):
-    tasks = select(t for t in Task if t.user.name==name).order_by(desc(Task.group))[:]
-    if tasks:
-        return tasks[0].group.key
+    user = User.get(name=name)
+    timeline = select(t for t in Timeline if user in t.user).order_by(desc(Timeline.created_at))[:1]
+    if timeline:
+        return timeline[0].key
     else:
-        return generate_key()
+        key = generate_key()
+        user = User.get(name=name)
+        create_new_timeline(key, user.id, "Timeline")
+        return key
 
 
