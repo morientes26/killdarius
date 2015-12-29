@@ -18,6 +18,7 @@
             <div class="panel-body">
                 <ul class="timeline">
                     {% for group in groups %}
+
                     <li class="{{ loop.cycle('', 'timeline-inverted') }}">
                         <div class="timeline-badge {{ loop.cycle('danger', 'info', 'warning') }}"><i class="fa fa-bullseye"></i>
                         </div>
@@ -35,51 +36,62 @@
                                </p>
                                </br>
                                {% endif %}
+                               {% for user in users %}
 
-                               {% for task in group.tasks %}
-                                 <div class="row">
-                                   {% set done=False %}
-                                   {% if task.count <= task.progress.__len__() %}
-                                       {% set done=True %}
-                                   {% endif %}
+                                   {{ user.name }}
+                                   <div style="margin-top:10px;">
 
-                                   {% if done %}
-                                       {% set title="Úloha bola dokončená" %}
-                                   {% else %}
-                                       {% set title="Trvanie úlohy : "+task.count|string+" dní" %}
-                                   {% endif %}
-                                   <div class="col-md-4{% if done %} completed{% endif %}"
-                                       title="{{ title }}">
-
-                                          {% if task.reset %}
-                                              <span title="Spustené resetovanie progresu úlohy po dvoch neúspechoch !"><i class="fa fa-bomb"></i></span>
-                                          {% endif %}
-
-                                          {{task.name}}
-                                   </div>
-                                   <div class="col-md-5">
-                                      {% if not done %}
-
-                                      {% for p in task.progress|sort(attribute='id') %}
-                                        {% if p.done %}
-                                          <span class="label label-success"><i class="fa fa-check"></i></span>
-                                        {% else %}
-                                          <span class="label label-danger"><i class="fa fa-times"></i></span>
-                                        {% endif %}
-                                      {% endfor %}
-
+                                   {% for task in group.tasks|sort %}
+                                       {% if user!=task.user %}
+                                            {% continue %}
                                        {% endif %}
-                                   </div>
-                                   <div class="col-md-3">
-                                      {% if task.count > task.progress.__len__() %}
-                                        <a href="/timeline/task/pass/{{ task.id }}" title="splnenie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-thumbs-o-up"></i></button></a>
-                                        <a href="/timeline/task/fail/{{ task.id }}" title="nesplnenie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-thumbs-o-down"></i></button></a>
-                                      {% endif %}
-                                      <a href="/timeline/task/remove/{{ task.id }}" title="vymazanie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-times"></i></button></a>
-                                   </div>
-                                </div>
-                                {% endfor %}
 
+                                     <div class="row">
+                                       {% set done=False %}
+                                       {% if task.count <= task.progress.__len__() %}
+                                           {% set done=True %}
+                                       {% endif %}
+
+                                       {% if done %}
+                                           {% set title="Úloha bola dokončená" %}
+                                       {% else %}
+                                           {% set title="Trvanie úlohy : "+task.count|string+" dní" %}
+                                       {% endif %}
+                                       <div class="col-md-4{% if done %} completed{% endif %}"
+                                           title="{{ title }}">
+
+                                              {% if task.reset %}
+                                                  <span title="Spustené resetovanie progresu úlohy po dvoch neúspechoch !"><i class="fa fa-bomb"></i></span>
+                                              {% endif %}
+
+                                              {{task.name}}
+                                       </div>
+                                       <div class="col-md-5">
+                                          {% if not done %}
+
+                                          {% for p in task.progress|sort(attribute='id') %}
+                                            {% if p.done %}
+                                              <span class="label label-success"><i class="fa fa-check"></i></span>
+                                            {% else %}
+                                              <span class="label label-danger"><i class="fa fa-times"></i></span>
+                                            {% endif %}
+                                          {% endfor %}
+
+                                           {% endif %}
+                                       </div>
+                                       <div class="col-md-3">
+                                          {% if task.count > task.progress.__len__() %}
+                                            <a href="/timeline/task/pass/{{ task.id }}" title="splnenie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-thumbs-o-up"></i></button></a>
+                                            <a href="/timeline/task/fail/{{ task.id }}" title="nesplnenie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-thumbs-o-down"></i></button></a>
+                                          {% endif %}
+                                          <a href="/timeline/task/remove/{{ task.id }}" title="vymazanie úlohy"><button class="btn btn-default btn-circle"><i class="fa fa-times"></i></button></a>
+                                       </div>
+                                    </div>
+                                    {% endfor %}
+
+                                   </div>
+
+                                {% endfor %}
                               <!-- control panel -->
                               <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">

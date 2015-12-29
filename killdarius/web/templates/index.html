@@ -1,18 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
 
-{% if token %}
-  <a href="">go to {{ token }}</a>
-{% else %}
-  <p>Vytvor si vlastného Dariusa, ktorého premôžeš. Je potrebné vygenerovať klúč, pomocou, ktorého sa dostaneš
-  k svojmu Dariusovi. <a href="/generate/">Generovať kľúč</a></p>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-8">
+            <p>Vyskúšaj si svojho Dariusa a vstúp bez prihlásenia ako anonymný používateľ <a href="/anonym-login/">vstúpiť</a></p>
+        </div>
+    </div>
 
-  <p>Ak už máš vygenerovaný kľúč, vlož ho do textového pola a pokračuj ďalej
-  <form method="post" action="/login/">
-    <input type="text" name="key" value="{{ key }}" />
-    <button type="submit">Pokračovať</button>
-  </form>
-  </p>
+    {% if token %}
+      <a href="">go to {{ token }}</a>
+    {% else %}
+
 {% endif %}
+
+{% include 'login.html' %}
 
 {% endblock %}

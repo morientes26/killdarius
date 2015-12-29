@@ -1,50 +1,61 @@
-import uuid
-
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 
 from killdarius.model.entity import *
 
 application = Flask(__name__)
+application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 # set the secret key.  keep this really secret:
 application.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+application.config['TEST_USER'] = "anonym-224"
+application.config['ADMIN_USER'] = "morientes"
+
 
 connect_db()
 
 
 @application.route("/")
-def index(key=""):
-    if 'key' in session:
-        key = session['key']
-
-    return render_template('index.html', key=key)
+def index():
+    return render_template('index.html')
 
 
-@application.route('/generate/')
+@application.route('/anonym-login/')
 @db_session
 def generate():
-    session['key'] = uuid.uuid4().hex[:8]
+    session['key'] = generate_key()
     return redirect("/timeline/"+session['key'])
 
 
-@application.route('/login/', methods=['POST'])
+@application.route('/login/', methods=['GET', 'POST'])
 @db_session
 def login():
-    if validate_login_key(request.form['key']):
-        session['key'] = request.form['key']
-    else:
-        flash('Kľúč neexistuje', 'error')
-        return redirect("/")
+    if request.method == 'POST':
+        if not login_validation(request.form['username'], request.form['password']):
+            flash('Nesprávne heslo', 'error')
+        else:
+            session['logged_in'] = True
+            session['username'] = request.form['username']
+            session['user_id'] = find_user_by_name(request.form['username']).id
+            key = get_last_created_key_by_username(request.form['username'])
+            session['key'] = key
+            return redirect("/timeline/" + key)
+    return render_template('index.html')
 
-    return redirect("/timeline/"+request.form['key'])
 
-
-def validate_login_key(key):
-    check = find_all_groups(key)
-    if check:
+def login_validation(username, password):
+    if username == application.config['TEST_USER']:
         return True
     else:
-        return False
+        return is_valid_login_user(username, password)
+
+
+@application.route('/logout/')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    session.pop('user_id', None)
+    session.pop('key', None)
+    return redirect(url_for('index'))
 
 
 @application.route('/timeline/<key>')
@@ -54,8 +65,9 @@ def show_tasks(key=None):
         redirect(url_for('index'))
 
     groups = find_all_groups(key)
+    users = find_all_user_in_timeline(key)
 
-    return render_template('timeline.html', groups=groups, key=key)
+    return render_template('timeline.html', groups=groups, key=key, users=users)
 
 
 @application.route('/timeline/task/create/', methods=['POST'])
@@ -69,6 +81,7 @@ def create_task():
         create_new_task(request.form['taskname'],
                         request.form['key'],
                         request.form['count'],
+                        session['user_id'],
                         reset,
                         request.form['group_id'])
     return redirect('/timeline/'+request.form['key'])
