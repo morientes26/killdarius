@@ -8,20 +8,22 @@ from killdarius.model.entities import connect_db
 application = Flask(__name__)
 
 
-def init(application):
-    application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-    if 'KILLDARIUS_MODE' in os.environ:
-        application.config.from_pyfile('killdarius.'+os.environ['KILLDARIUS_MODE']+'_settings')
-        print("Application running in "+os.environ['KILLDARIUS_MODE']+" mode")
-    else:
-        application.config.from_pyfile('killdarius.settings')
-        print("Application running in production mode")
+application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-    logging.basicConfig(filename='../data/killdarius.log',
-                        level=logging.DEBUG,
-                        format='%(asctime)s %(message)s',
-                        datefmt='%m/%d/%Y %I:%M:%S %p')
+if 'KILLDARIUS_MODE' in os.environ:
+    application.config.from_pyfile('killdarius.'+os.environ['KILLDARIUS_MODE']+'_settings')
+    print("Application running in "+os.environ['KILLDARIUS_MODE']+" mode")
+else:
+    application.config.from_pyfile('killdarius.settings')
+    print("Application running in production mode")
+
+logging.basicConfig(filename='../data/killdarius.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
+
+connect_db(application.config['DATABASE_URI'])
 
 
 @application.route("/")
@@ -212,7 +214,5 @@ def remove_chosen_group(id=None):
 
 
 if __name__ == "__main__":
-    init(application)
-    connect_db(application.config['DATABASE_URI'])
     application.run(debug=True)
 
