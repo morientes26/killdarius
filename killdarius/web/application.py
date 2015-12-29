@@ -1,16 +1,27 @@
+import os
+
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 
-from killdarius.model.entity import *
+from killdarius.model.api import *
+from killdarius.model.entities import connect_db
 
 application = Flask(__name__)
-application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-# set the secret key.  keep this really secret:
-application.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-application.config['TEST_USER'] = "anonym-224"
-application.config['ADMIN_USER'] = "morientes"
 
-connect_db()
+def init(application):
+    application.jinja_env.add_extension('jinja2.ext.loopcontrols')
+
+    if 'KILLDARIUS_MODE' in os.environ:
+        application.config.from_pyfile('killdarius.'+os.environ['KILLDARIUS_MODE']+'_settings')
+        print("Application running in "+os.environ['KILLDARIUS_MODE']+" mode")
+    else:
+        application.config.from_pyfile('killdarius.settings')
+        print("Application running in production mode")
+
+    logging.basicConfig(filename='../data/killdarius.log',
+                        level=logging.DEBUG,
+                        format='%(asctime)s %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 @application.route("/")
@@ -31,30 +42,38 @@ def login():
     if request.method == 'POST':
         if not login_validation(request.form['username'], request.form['password']):
             flash('Nesprávne heslo', 'error')
+            logging.error("Nesprávne heslo [%s]", request.form['username'])
         else:
-            session['logged_in'] = True
             session['username'] = request.form['username']
             session['user_id'] = find_user_by_name(request.form['username']).id
             key = get_last_created_key_by_username(request.form['username'])
             session['key'] = key
+            logging.info("login success [%s]", request.form['username'])
             return redirect("/timeline/" + key)
     return render_template('index.html')
 
 
 def login_validation(username, password):
-    if username == application.config['TEST_USER']:
-        return True
-    else:
-        return is_valid_login_user(username, password)
+    return is_valid_login_user(username, password)
 
 
 @application.route('/logout/')
 def logout():
-    session.pop('logged_in', None)
     session.pop('username', None)
     session.pop('user_id', None)
     session.pop('key', None)
     return redirect(url_for('index'))
+
+
+@application.route('/user/password/', methods=['POST'])
+def set_password():
+    if request.form['password']!="" and request.form['password'] == request.form['password2']:
+        set_user_password(session["user_id"], request.form['password'])
+        flash("Heslo úspešne nastavené")
+    else:
+        return redirect('/timeline/' + session['key']+ "?promt=1&error=Zle zadané heslo!")
+
+    return redirect('/timeline/' + session['key'])
 
 
 @application.route('/timeline/<key>')
@@ -73,8 +92,12 @@ def show_tasks(key=None):
     users = find_all_user_in_timeline(key)
     timelines = find_all_user_timeline(session['user_id'])
     progression = count_progression(groups)
+    promt = request.args.get('promt')
+    error = request.args.get('error')
 
-    return render_template('timeline.html', groups=groups, key=key, users=users, timelines=timelines, progression=progression)
+    return render_template('timeline.html', groups=groups, key=key,
+                                            users=users, timelines=timelines,
+                                            progression=progression, promt=promt, error=error)
 
 
 @application.route('/timeline/task/create/', methods=['POST'])
@@ -110,14 +133,23 @@ def share_timeline():
         from_user = find_user_by_name(session['username'])
         emails = request.values.getlist('emails')
         share_timeline_to_email(from_user, emails, key)
+        logging.info("share timeline : [%s]", key)
         flash("Kontaktom bola odoslaná požiadavka na zdielanie timelinu")
         return redirect("/timeline/" + key)
     else:
         username = request.args.get('user')
         key = request.args.get('key')
         user = add_user_to_db(username, key)
+        session['username'] = username
+        session['user_id'] = user.id
+        session['key'] = key
         flash("Vitaj, "+user.name+" v zdielanom timeline")
-        return redirect("/timeline/" + key)
+        logging.info("share login : [%s]", user.name)
+        promt = ""
+        if user.password == "..empty..":
+            promt = "?promt=1"
+
+        return redirect("/timeline/" + key + promt)
 
 
 @application.route('/timeline/group/create/', methods=['POST'])
@@ -180,4 +212,7 @@ def remove_chosen_group(id=None):
 
 
 if __name__ == "__main__":
+    init(application)
+    connect_db(application.config['DATABASE_URI'])
     application.run(debug=True)
+

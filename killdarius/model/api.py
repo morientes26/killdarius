@@ -1,67 +1,9 @@
 import logging
 import uuid
-from datetime import datetime
-from pony.orm import Database, Required, Set, PrimaryKey, db_session, Optional, select, desc
+from pony.orm import db_session, select, desc
 
 from killdarius.ext.send_email import EmailNotification
-
-db = Database()
-
-
-# logging.basicConfig(filename='pony.log', level=logging.INFO)
-
-
-class Progress(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    done = Optional(bool)
-    task = Optional(lambda: Task)
-
-
-class Task(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    name = Required(str, 126)
-    created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
-    progress = Set(Progress, cascade_delete=True)
-    user = Required(lambda: User)
-    count = Required(int, default=0)
-    reset = Required(bool, default=True)
-    label = Optional(str, 32, nullable=True)
-    group = Optional(lambda: Group)
-
-
-class Timeline(db.Entity):
-    key = PrimaryKey(str)
-    name = Required(str, 126, default='timeline')
-    user = Set(lambda: User)
-    owner = Required(lambda: User)
-
-
-class User(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    name = Required(str, 32)
-    password = Required(str, 32)
-    task = Set(Task, cascade_delete=True)
-    timeline = Set(Timeline)
-    own_timeline = Set(Timeline, reverse="owner")
-
-
-class Group(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    name = Required(str, 126, default='bez mena')
-    tasks = Set(Task, cascade_delete=True)
-    key = Required(str, 32)
-    label = Optional(str, 32, nullable=True)
-    description = Optional(str, 256, nullable=True)
-
-
-def connect_db():
-    db.bind('sqlite', '../data/killdarius.sqlite', create_db=False)
-    db.generate_mapping(create_tables=False)
-
-
-def create_db():
-    db.bind('sqlite', '../data/killdarius.sqlite', create_db=True)
-    db.generate_mapping(create_tables=True)
+from killdarius.model.entities import Progress, User, Group, Timeline, Task
 
 
 def generate_key():
@@ -82,6 +24,7 @@ def authorize(key, session):
 
 @db_session
 def create_new_task(name, key, count, user_id, reset=False, group_id=None, progress=None):
+    logging.debug("Create new task")
     user = User[user_id]
     task = Task(name=name, user=user, count=count, reset=reset)
     if progress:
@@ -123,9 +66,16 @@ def add_user_to_db(username, key):
     user = find_user_by_name(username)
     if not user:
         user = User(name=username, password="..empty..")
-        timeline = Timeline.get(key=key)
+    timeline = Timeline.get(key=key)
+    if user not in timeline.user:
         add_user_to_timeline(user, timeline)
     return user
+
+
+@db_session
+def set_user_password(user_id, password):
+    user = User.get(id=user_id)
+    user.password = password
 
 
 @db_session
@@ -281,25 +231,4 @@ def get_last_created_key_by_username(name):
     else:
         return generate_key()
 
-
-@db_session
-def create_test_data():
-    key = '0000'
-    person = User(name='mori', password='mori')
-    timeline = Timeline(name='test timeline', owner=person, user=person, key=key)
-    person.timeline = timeline
-    task = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person)
-
-    prog1 = Progress(task=task)
-
-    person2 = User(name='lucia', password='lucia')
-    task2 = Task(name='chodievat plavat kazdy den', count=7, reset=True, user=person2)
-
-    prog2 = Progress(task=task2)
-
-    Group(name='Skupina 1', tasks=[task, task2], key=key, label="11.10.2015 - 11.01.2016")
-    Group(name='Skupina 2', tasks=[task], key=key, description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dolorem quibusdam, tenetur commodi provident cumque magni voluptatem libero, quis rerum. Fugiat esse debitis optio, tempore. Animi officiis alias, officia repellendus.")
-
-#create_db()
-#create_test_data()
 

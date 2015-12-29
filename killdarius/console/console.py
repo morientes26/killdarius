@@ -2,7 +2,7 @@ from pony.orm import commit, db_session
 
 from killdarius.console.task import Task
 from killdarius.console.task_manager import TaskManager
-from killdarius.model.entity import find_all_task, delete_tasks, create_db, create_new_task
+from killdarius.model.api import find_all_task, delete_tasks, create_db, create_new_task
 
 
 class Application(object):

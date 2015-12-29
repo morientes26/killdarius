@@ -170,3 +170,41 @@
     </div>
   </div>
 </div>
+
+<!-- modal na zmenu hesla -->
+<div class="modal fade" id="passwordSet" tabindex="-1" aria-labelledby="passwordSetLabel" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/user/password/">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Nastavenie hesla</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+            Systém Vás registroval, ale je potrebne si nastaviť prihlasovacie heslo.<br/>
+            Na vytvorenie hesla nie sú žiadne obmedzenia.
+        </p>
+      <br/>
+        <div class="form-group">
+            <label for="name" class="control-label">Heslo :</label>
+            <input type="password" name="password" id="password" class="form-control" autofocus/>
+        </div>
+        <div class="form-group">
+            <label for="password2" class="control-label">Heslo ešte raz:</label>
+            <input type="password" name="password2" id="password2" class="form-control"/>
+        </div>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zavrieť</button>
+        <button type="submit" class="btn btn-primary">Nastaviť</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

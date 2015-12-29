@@ -80,7 +80,13 @@
                 tags: true,
                 theme: "classic"
             })
+
+            // open modal for set user password
+            if ({{ promt }}){
+                $('#passwordSet').modal('show');
+            }
         });
+
     </script>
 </body>
 </html>

@@ -14,10 +14,12 @@ verzia : 0.1.3
         - odoslanie zdielania
         - aktivovanie noveho konta pri doruceni zdielaneho linku
         - zobrazovanie progresu taskov
+        - refaktoring tried, metod a logovanie
+        - add config file - production vs develop
+        - modal na zmenu hesla po prvom prihlaseni
 
 Úlohy na vylepšenie :
-                
-        - modal na zmenu hesla po prvom prihlaseni
+        
         - zmena profilu, nickname, obrazok, heslo        
         - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
         - notifikacie zdielani
