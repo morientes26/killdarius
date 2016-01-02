@@ -15,9 +15,15 @@
                     </div>
                     <div class="col-md-7">
                         {% if users.__len__()>1 %}
-                            <span> spolocne zdielaju timeline : </span>
+                            <span> spoločne zdieľajú timeline : </span>
                             {% for user in users %}
-                                <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">{{ user.name }}</span>
+                                <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">
+                                    {% if user.nickname=='' %}
+                                        {{ user.name }}
+                                    {% else %}
+                                        {{ user.nickname }}
+                                    {% endif %}
+                                </span>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -51,7 +57,13 @@
                                </br>
                                {% endif %}
                                {% for user in users %}
-                                    <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">{{ user.name }}</span>
+                                    <span class="btn btn-outline btn-{{ user.icon_color }} btn-xs">
+                                        {% if user.nickname=='' %}
+                                            {{ user.name }}
+                                        {% else %}
+                                            {{ user.nickname }}
+                                        {% endif %}
+                                    </span>
 
                                    <div style="margin-top:10px;">
 
@@ -87,7 +99,6 @@
                                        </div>
                                        <div class="col-md-5">
                                        {% if not done %}
-
                                           {% for p in task.progress|sort(attribute='id') %}
                                             {% if p.done %}
                                               <span class="btn btn btn-success btn-xs">&nbsp;</span>
@@ -100,7 +111,8 @@
                                           {% for p in range(task.count - task.progress.__len__()) %}
                                                 <span class="btn btn-outline btn-default btn-xs">&nbsp;</span>
                                           {% endfor %}
-
+                                       {% else %}
+                                           <span title="Počet úspešnýchne | úspešných plnení úloh">{{ task.progress|count_done_task }} / {{ task.progress|count_fail_task }}</span>
                                        {% endif %}
                                        </div>
                                        <div class="col-md-3">

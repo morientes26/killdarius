@@ -4,9 +4,11 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 
 from killdarius.model.api import *
 from killdarius.model.entities import connect_db
+from killdarius.web.filter import count_done_task, count_fail_task
 
 application = Flask(__name__)
-
+application.jinja_env.filters['count_done_task'] = count_done_task
+application.jinja_env.filters['count_fail_task'] = count_fail_task
 
 
 application.jinja_env.add_extension('jinja2.ext.loopcontrols')

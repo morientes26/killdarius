@@ -6,8 +6,9 @@ verzia : 0.1.4
 
         - zmena profilu, nickname, obrazok, heslo
         - plnenie ulohy maximalne 1x za den
+        - upravit flash aby sa zobrazila v strede a zmizla
 
-Úlohy na vylepšenie :        
+Úlohy na vylepšenie :     
         
         - UX
         - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
