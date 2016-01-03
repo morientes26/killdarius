@@ -2,7 +2,6 @@ from flask import current_app
 from pystmark import (send, send_batch, get_delivery_stats, get_bounces,
                       get_bounce, get_bounce_dump, get_bounce_tags,
                       activate_bounce, Message as _Message)
-from __about__ import __version__, __title__, __description__
 
 __all__ = ['__version__', '__title__', '__description__', 'Pystmark',
            'Message']
