@@ -2,7 +2,7 @@
 
 Projekt slúžiaci na manažovanie svojich úloh, cielov, zvykov
 
-verzia : 0.1.4
+verzia : 0.1.5
 
         - zmena profilu, nickname, obrazok, heslo
         - plnenie ulohy maximalne 1x za den

@@ -3,8 +3,9 @@ import uuid
 
 from datetime import date, timedelta, datetime
 from pony.orm import db_session, select, desc
-from pystmark import Message, ResponseError, os
 
+from killdarius.ext.flask_pystmark import Message
+from killdarius.ext.pystmark import ResponseError
 from killdarius.ext.send_email import EmailNotification
 from killdarius.model.entities import Progress, User, Group, Timeline, Task
 
