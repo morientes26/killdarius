@@ -3,6 +3,7 @@ import uuid
 
 from datetime import date, timedelta, datetime
 from pony.orm import db_session, select, desc
+from pystmark import Message, ResponseError, os
 
 from killdarius.ext.send_email import EmailNotification
 from killdarius.model.entities import Progress, User, Group, Timeline, Task
@@ -88,7 +89,7 @@ def set_user_profile(user_id, nickname, icon_color):
 
 
 @db_session
-def share_timeline_to_email(from_user, emails, key):
+def share_timeline_to_email(from_user, emails, key, pystmark, application):
     timeline = Timeline.get(key=key)
     e_notify = EmailNotification()
 
@@ -96,8 +97,16 @@ def share_timeline_to_email(from_user, emails, key):
         user = User.get(name=email)
         if user:
             add_user_to_timeline(user, timeline)
-        text = prepare_text(from_user, email, key)
-        e_notify.send(email, text[0], text[1])
+        text = prepare_text(from_user, email, key, application)
+        #e_notify.send(email, text[0], text[1])
+        m = Message(to=email, html=text[1], sender="kalman@essential-data.sk")
+        resp = pystmark.send(m)
+        try:
+            resp.raise_for_status()
+        except ResponseError as e:
+            return print('Failed to send message. Reason: {}'.format(e))
+        else:
+            return print('Sent message to {}'.format(resp.message.to))
 
 
 def add_user_to_timeline(user, timeline):
@@ -107,9 +116,10 @@ def add_user_to_timeline(user, timeline):
     timeline.user = users
 
 
-def prepare_text(from_user, email, key):
+def prepare_text(from_user, email, key, application):
     token = "?key="+key+"&user="+email
-    share_url = "http://localhost:5000/timeline/share/"+token
+    app_uri = application.config['APP_URI']
+    share_url = app_uri + "/timeline/share/"+token
     text = "Ahoj!\nBola ti poslaná notifikácia o zdielani timelinu v projekte KillDarius od používateľa <b>"+from_user.name+"</br>\nNotifikáciu si mǒžeš pozrieť kliknutím na link\n"+share_url
     html = "<html><head></head><body><p>Ahoj!<br>Bola ti poslaná notifikácia o zdielaní timelinu v projekte KillDarius od používateľa <b>"+from_user.name+"</b><br>Notifikáciu si mǒžeš pozrieť kliknutím na link <a href="+share_url+">link</a></p></body></html>"
     return [text, html]
@@ -208,7 +218,13 @@ def find_all_groups(key):
 @db_session
 def find_all_user_in_timeline(key):
     #FIXME: prerobit cez distinc usera
-    return select(u for u in User for t in Task if t.group.key==key).order_by(User.id)[:]
+    #return select(u for u in User for t in Task if t.group.key==key and t.user in u).order_by(User.id)[:]
+    users = []
+    tasks = select(t for t in Task if t.group.key==key)[:]
+    for task in tasks:
+        if task.user not in users:
+            users.append(task.user)
+    return users
 
 
 @db_session

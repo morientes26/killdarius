@@ -2,3 +2,4 @@ DEBUG=False
 TESTING=False
 SECRET_KEY='A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 DATABASE_URI='../data/killdarius.sqlite'
+APP_URI='http://killdarius.heroku.com'

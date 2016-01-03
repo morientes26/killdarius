@@ -1,6 +1,9 @@
 import os
 
+
 from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask.ext.pystmark import Pystmark, Message
+from pystmark import ResponseError
 
 from killdarius.model.api import *
 from killdarius.model.entities import connect_db
@@ -9,7 +12,9 @@ from killdarius.web.filter import count_done_task, count_fail_task
 application = Flask(__name__)
 application.jinja_env.filters['count_done_task'] = count_done_task
 application.jinja_env.filters['count_fail_task'] = count_fail_task
-
+application.config['PYSTMARK_API_KEY'] = 'a7e112c2-2569-461f-9d17-ff3361e2553b'
+application.config['PYSTMARK_DEFAULT_SENDER'] = 'morienstudio@gmail.com'
+pystmark = Pystmark(application)
 
 application.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
@@ -141,14 +146,14 @@ def create_timeline():
     return redirect("/timeline/" + session['key'])
 
 
-@application.route('/timeline/share/', methods=['POST','GET'])
+@application.route('/timeline/share/', methods=['POST', 'GET'])
 @db_session
 def share_timeline():
     if request.method == 'POST':
         key = session['key']
         from_user = find_user_by_name(session['username'])
         emails = request.values.getlist('emails')
-        share_timeline_to_email(from_user, emails, key)
+        share_timeline_to_email(from_user, emails, key, pystmark, application)
         logging.info("share timeline : [%s]", key)
         flash("Kontaktom bola odoslaná požiadavka na zdielanie timelinu")
         return redirect("/timeline/" + key)

@@ -10,6 +10,9 @@ verzia : 0.1.4
 
 Úlohy na vylepšenie :     
         
+        - produkcny mod
+        - osetrovanie vynimiek
+        - nastavit email na domenu
         - UX
         - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
         - notifikacie zdielani    
