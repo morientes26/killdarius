@@ -92,7 +92,7 @@ def set_user_profile(user_id, nickname, icon_color):
 @db_session
 def share_timeline_to_email(from_user, emails, key, pystmark, application):
     timeline = Timeline.get(key=key)
-    e_notify = EmailNotification()
+    #e_notify = EmailNotification()
 
     for email in emails:
         user = User.get(name=email)
@@ -218,13 +218,14 @@ def find_all_groups(key):
 
 @db_session
 def find_all_user_in_timeline(key):
-    #FIXME: prerobit cez distinc usera
-    #return select(u for u in User for t in Task if t.group.key==key and t.user in u).order_by(User.id)[:]
+    timelines = select(t for t in Timeline if t.key==key)
+
     users = []
-    tasks = select(t for t in Task if t.group.key==key)[:]
-    for task in tasks:
-        if task.user not in users:
-            users.append(task.user)
+    for time in timelines:
+        for u in time.user:
+            if u not in users:
+                users.append(u)
+
     return users
 
 

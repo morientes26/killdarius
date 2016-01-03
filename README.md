@@ -8,10 +8,10 @@ verzia : 0.1.5
         - plnenie ulohy maximalne 1x za den
         - upravit flash aby sa zobrazila v strede a zmizla
         - posielanie emailov cez postmark
+        - produkcny mod
 
 Úlohy na vylepšenie :     
         
-        - produkcny mod
         - osetrovanie vynimiek
         - nastavit email na domenu
         - ext zavislosti poriesit
