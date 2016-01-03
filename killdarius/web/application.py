@@ -2,9 +2,9 @@ import os
 
 
 from flask import Flask, render_template, redirect, url_for, request, session, flash
-from flask.ext.pystmark import Pystmark, Message
-from pystmark import ResponseError
-
+#from flask.ext.pystmark import Pystmark, Message
+#from pystmark import ResponseError
+from killdarius.ext.flask_pystmark import Pystmark
 from killdarius.model.api import *
 from killdarius.model.entities import connect_db
 from killdarius.web.filter import count_done_task, count_fail_task

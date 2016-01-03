@@ -7,12 +7,14 @@ verzia : 0.1.4
         - zmena profilu, nickname, obrazok, heslo
         - plnenie ulohy maximalne 1x za den
         - upravit flash aby sa zobrazila v strede a zmizla
+        - posielanie emailov cez postmark
 
 Úlohy na vylepšenie :     
         
         - produkcny mod
         - osetrovanie vynimiek
         - nastavit email na domenu
+        - ext zavislosti poriesit
         - UX
         - refaktoring a API, ktore sa budu dat pouzit pri mobilnej apke
         - notifikacie zdielani    
