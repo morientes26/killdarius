@@ -54,12 +54,16 @@ class Group(db.Entity):
 
 
 def connect_db(db_uri):
-    db.bind('sqlite', db_uri, create_db=False)
+    db_type = 'sqlite'
+    #db.bind(db_type, db_uri, create_db=False)
+    db.bind('postgres', user='kmtuhklmcrudbw', password='9kQ2PawPQ4FwRMbqj0OvbDyuN2', host='ec2-54-204-12-25.compute-1.amazonaws.com', database='dac4ur43v1c3od')
     db.generate_mapping(create_tables=False)
 
 
 def create_db(db_uri):
-    db.bind('sqlite', db_uri, create_db=True)
+    db_type = 'sqlite'
+    db.bind('postgres', user='kmtuhklmcrudbw', password='9kQ2PawPQ4FwRMbqj0OvbDyuN2', host='ec2-54-204-12-25.compute-1.amazonaws.com', database='dac4ur43v1c3od')
+    #db.bind(db_type, db_uri, create_db=True)
     db.generate_mapping(create_tables=True)
 
 
@@ -83,7 +87,9 @@ def create_test_data():
 
 
 def initialize_db_environment():
-    create_db('../data/killdarius.sqlite')
+    uri = 'postgres://kmtuhklmcrudbw:9kQ2PawPQ4FwRMbqj0OvbDyuN2@ec2-54-204-12-25.compute-1.amazonaws.com:5432/dac4ur43v1c3od'
+    #create_db('../data/killdarius.sqlite')
+    create_db(uri)
     create_test_data()
 
 if 'IMPORT_DB' in os.environ:
